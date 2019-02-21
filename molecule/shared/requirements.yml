@@ -1,0 +1,4 @@
+- src: https://github.com/RedHatNordicsSA/ansible-role-apache.git
+  scm: git
+- src: https://github.com/RedHatNordicsSA/ansible-role-php.git
+  scm: git

@@ -1,0 +1,27 @@
+- hosts: app
+  become: true
+  tasks:
+  - include_role:
+      name: ansible-role-redhatnordicssa-blog
+    vars:
+      redhatnordicssa_blog_jekyll_listening_port: 80
+
+- hosts: haproxy
+  become: true
+  tasks:
+  - name: Initialize an empty list for our app servers
+    set_fact:
+      app_servers: []
+
+  - name: Append app servers to list
+    set_fact:
+      app_servers: "{{ app_servers + [ { 'name': item, 'address': hostvars[item]['ansible_default_ipv4']['address'] } ] }}"
+    loop: "{{ query('inventory_hostnames', 'app') }}"
+  
+  - debug: var=app_servers
+
+  - include_role:
+      name: ansible-role-haproxy
+    vars:
+      haproxy_backend_servers: "{{ app_servers }}"
+      haproxy_backend_port: 80
